@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gallery World Pro</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://js.puter.com/v2/"></script>
     <style>
         * {
             margin: 0;
@@ -27,6 +28,7 @@
             --note-yellow: #fff9c4;
             --note-green: #c8e6c9;
             --note-blue: #bbdefb;
+            --ai-purple: #8a2be2;
         }
         
         body {
@@ -253,6 +255,32 @@
             font-size: 14px;
         }
         
+        /* Album Gallery View */
+        .album-gallery-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+            padding: 2px;
+            flex: 1;
+            display: none;
+        }
+        
+        .album-header {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: var(--light);
+            border-bottom: 1px solid var(--border);
+            display: none;
+        }
+        
+        .back-button {
+            font-size: 20px;
+            margin-right: 10px;
+            cursor: pointer;
+            color: var(--primary);
+        }
+        
         /* Notes View */
         .notes-container {
             padding: 15px;
@@ -308,6 +336,158 @@
             margin-top: 5px;
         }
         
+        /* AI Assistant View */
+        .ai-container {
+            padding: 15px;
+            flex: 1;
+            display: none;
+            flex-direction: column;
+            background: #f9f9ff;
+            overflow: hidden;
+        }
+        
+        .ai-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .ai-header i {
+            font-size: 24px;
+            color: var(--ai-purple);
+            background: rgba(138, 43, 226, 0.1);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        
+        .ai-header h2 {
+            font-size: 20px;
+            color: var(--text-dark);
+        }
+        
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .message {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            line-height: 1.4;
+            position: relative;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .user-message {
+            align-self: flex-end;
+            background: var(--primary);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .ai-message {
+            align-self: flex-start;
+            background: var(--light);
+            border: 1px solid var(--border);
+            border-bottom-left-radius: 4px;
+        }
+        
+        .ai-typing {
+            align-self: flex-start;
+            background: var(--light);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-light);
+        }
+        
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+        }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--text-light);
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+        
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-5px); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .chat-input-container {
+            display: flex;
+            gap: 10px;
+            padding: 10px 0;
+            background: var(--light);
+        }
+        
+        .chat-input {
+            flex: 1;
+            padding: 14px 18px;
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            font-size: 16px;
+            background: var(--light);
+            outline: none;
+            transition: border 0.3s;
+        }
+        
+        .chat-input:focus {
+            border-color: var(--ai-purple);
+        }
+        
+        .send-button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--ai-purple);
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .send-button:hover {
+            background: #7a1fd1;
+        }
+        
         /* Bottom Navigation */
         .bottom-nav {
             background: var(--light);
@@ -344,6 +524,10 @@
         .nav-item .label {
             font-size: 10px;
             font-weight: 500;
+        }
+        
+        .ai-nav.active {
+            color: var(--ai-purple);
         }
         
         /* Plus button in center */
@@ -707,11 +891,22 @@
     <div class="app-container">
         <!-- Header -->
         <header>
+            <div class="back-button" id="backButton" style="display: none;">
+                <i class="fas fa-arrow-left"></i>
+            </div>
             <div class="logo">
                 <i class="fas fa-images"></i>
-                <h1>Gallery World Pro</h1>
+                <h1 id="headerTitle">Gallery World Pro</h1>
             </div>
         </header>
+        
+        <!-- Album Header (hidden by default) -->
+        <div class="album-header" id="albumHeader">
+            <div class="back-button" id="albumBackButton">
+                <i class="fas fa-arrow-left"></i>
+            </div>
+            <h2 id="albumTitle">Album Name</h2>
+        </div>
         
         <!-- Search Bar -->
         <div class="search-container">
@@ -726,6 +921,7 @@
             <div class="tab active" id="mediaTab">Media</div>
             <div class="tab" id="albumsTab">Albums</div>
             <div class="tab" id="notesTab">Notes</div>
+            <div class="tab" id="aiTab">AI Assistant</div>
         </div>
         
         <!-- Content Container -->
@@ -748,12 +944,49 @@
                 </div>
             </div>
             
+            <!-- Album Gallery View -->
+            <div class="album-gallery-container" id="albumGalleryView">
+                <div class="empty-state">
+                    <i class="fas fa-images"></i>
+                    <h2>Album is Empty</h2>
+                    <p>Add media to this album</p>
+                </div>
+            </div>
+            
             <!-- Notes View -->
             <div class="notes-container" id="notesView">
                 <div class="empty-state">
                     <i class="fas fa-sticky-note"></i>
                     <h2>No Notes Yet</h2>
                     <p>Create your first note</p>
+                </div>
+            </div>
+            
+            <!-- AI Assistant View -->
+            <div class="ai-container" id="aiView">
+                <div class="ai-header">
+                    <i class="fas fa-robot"></i>
+                    <h2>Gallery Assistant</h2>
+                </div>
+                
+                <div class="chat-container" id="chatContainer">
+                    <div class="message ai-message">
+                        Hello! I'm your Gallery Assistant. I can help you with:
+                        <ul style="margin-top: 8px; margin-left: 20px;">
+                            <li>Organizing your photos and albums</li>
+                            <li>Creating notes from your ideas</li>
+                            <li>Answering questions about your gallery</li>
+                            <li>Suggesting creative projects</li>
+                        </ul>
+                        How can I help you today?
+                    </div>
+                </div>
+                
+                <div class="chat-input-container">
+                    <input type="text" class="chat-input" id="prompt" placeholder="Ask something about your gallery..." autocomplete="off">
+                    <button class="send-button" id="sendButton">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
                 </div>
             </div>
         </div>
@@ -776,6 +1009,10 @@
             <div class="nav-item" id="notesNav">
                 <i class="fas fa-sticky-note"></i>
                 <span class="label">Notes</span>
+            </div>
+            <div class="nav-item ai-nav" id="aiNav">
+                <i class="fas fa-robot"></i>
+                <span class="label">AI</span>
             </div>
         </div>
         
@@ -922,7 +1159,9 @@
         // DOM Elements
         const galleryContainer = document.getElementById('galleryView');
         const albumsContainer = document.getElementById('albumsView');
+        const albumGalleryView = document.getElementById('albumGalleryView');
         const notesContainer = document.getElementById('notesView');
+        const aiContainer = document.getElementById('aiView');
         const actionSheet = document.getElementById('actionSheet');
         const actionOverlay = document.getElementById('actionOverlay');
         const uploadOption = document.getElementById('uploadOption');
@@ -956,14 +1195,24 @@
         const mediaNav = document.getElementById('mediaNav');
         const albumsNav = document.getElementById('albumsNav');
         const notesNav = document.getElementById('notesNav');
+        const aiNav = document.getElementById('aiNav');
         const mediaTab = document.getElementById('mediaTab');
         const albumsTab = document.getElementById('albumsTab');
         const notesTab = document.getElementById('notesTab');
+        const aiTab = document.getElementById('aiTab');
         const searchInput = document.getElementById('searchInput');
         const plusNav = document.getElementById('plusNav');
         const successTitle = document.getElementById('successTitle');
         const successMessage = document.getElementById('successMessage');
         const noteModalTitle = document.getElementById('noteModalTitle');
+        const chatContainer = document.getElementById('chatContainer');
+        const promptInput = document.getElementById('prompt');
+        const sendButton = document.getElementById('sendButton');
+        const backButton = document.getElementById('backButton');
+        const albumHeader = document.getElementById('albumHeader');
+        const albumBackButton = document.getElementById('albumBackButton');
+        const albumTitle = document.getElementById('albumTitle');
+        const headerTitle = document.getElementById('headerTitle');
         
         // State
         let mediaItems = [];
@@ -973,6 +1222,7 @@
         let currentMediaIndex = -1;
         let currentNoteIndex = -1;
         let selectedNoteColor = 'yellow';
+        let currentAlbumIndex = -1;
         
         // Function to load media
         function loadMedia() {
@@ -1049,9 +1299,15 @@
                 albumCard.className = 'album-card';
                 albumCard.dataset.id = index;
                 
+                // Use first image in album as cover if available
+                let coverContent = `<i class="fas fa-folder"></i>`;
+                if (album.items.length > 0 && album.items[0].type === 'image') {
+                    coverContent = `<img src="${album.items[0].url}" alt="Album Cover" style="width:100%; height:100%; object-fit:cover;">`;
+                }
+                
                 albumCard.innerHTML = `
                     <div class="album-cover">
-                        <i class="fas fa-folder"></i>
+                        ${coverContent}
                         <div class="count">${album.items.length}</div>
                     </div>
                     <div class="album-info">
@@ -1061,13 +1317,104 @@
                 `;
                 
                 albumCard.addEventListener('click', () => {
-                    showSuccess('Album Opened', `You opened the album "${album.name}"`);
+                    openAlbumGallery(index);
                 });
                 
                 albumGrid.appendChild(albumCard);
             });
             
             albumsContainer.appendChild(albumGrid);
+        }
+        
+        // Open album gallery view
+        function openAlbumGallery(index) {
+            currentAlbumIndex = index;
+            const album = albums[index];
+            
+            // Update UI
+            albumHeader.style.display = 'flex';
+            albumTitle.textContent = album.name;
+            albumsContainer.style.display = 'none';
+            albumGalleryView.style.display = 'grid';
+            
+            // Load album content
+            loadAlbumContent();
+        }
+        
+        // Load album content
+        function loadAlbumContent() {
+            if (currentAlbumIndex === -1) return;
+            
+            const album = albums[currentAlbumIndex];
+            albumGalleryView.innerHTML = '';
+            
+            if (album.items.length === 0) {
+                // Show empty state
+                const emptyState = document.createElement('div');
+                emptyState.className = 'empty-state';
+                emptyState.innerHTML = `
+                    <i class="fas fa-images"></i>
+                    <h2>Album is Empty</h2>
+                    <p>Add media to this album</p>
+                `;
+                albumGalleryView.appendChild(emptyState);
+                return;
+            }
+            
+            // Add media to album gallery
+            album.items.forEach((item, index) => {
+                const mediaItem = document.createElement('div');
+                mediaItem.className = 'gallery-item';
+                mediaItem.dataset.id = index;
+                mediaItem.dataset.type = item.type;
+                
+                if (item.type === 'image') {
+                    mediaItem.innerHTML = `
+                        <img src="${item.url}" alt="Media ${index + 1}">
+                        <div class="media-icon">
+                            <i class="fas fa-image"></i>
+                        </div>
+                    `;
+                } else {
+                    mediaItem.innerHTML = `
+                        <video>
+                            <source src="${item.url}" type="video/mp4">
+                        </video>
+                        <div class="media-icon">
+                            <i class="fas fa-video"></i>
+                        </div>
+                    `;
+                }
+                
+                mediaItem.addEventListener('click', () => {
+                    openMediaViewerInAlbum(index);
+                });
+                
+                albumGalleryView.appendChild(mediaItem);
+            });
+        }
+        
+        // Open media viewer from album
+        function openMediaViewerInAlbum(index) {
+            if (currentAlbumIndex === -1) return;
+            
+            const album = albums[currentAlbumIndex];
+            const media = album.items[index];
+            
+            mediaTitle.textContent = media.name;
+            mediaImage.style.display = 'none';
+            mediaVideo.style.display = 'none';
+            albumSelector.style.display = 'none';
+            
+            if (media.type === 'image') {
+                mediaImage.src = media.url;
+                mediaImage.style.display = 'block';
+            } else {
+                mediaVideo.src = media.url;
+                mediaVideo.style.display = 'block';
+            }
+            
+            mediaViewerModal.classList.add('active');
         }
         
         // Function to load notes
@@ -1353,6 +1700,9 @@
                         
                         // Hide selector
                         albumSelector.style.display = 'none';
+                        
+                        // Update albums view
+                        loadAlbums();
                     });
                     
                     albumSelector.appendChild(albumOption);
@@ -1392,12 +1742,18 @@
             mediaNav.classList.add('active');
             albumsNav.classList.remove('active');
             notesNav.classList.remove('active');
+            aiNav.classList.remove('active');
             mediaTab.classList.add('active');
             albumsTab.classList.remove('active');
             notesTab.classList.remove('active');
+            aiTab.classList.remove('active');
             galleryContainer.style.display = 'grid';
             albumsContainer.style.display = 'none';
+            albumGalleryView.style.display = 'none';
+            albumHeader.style.display = 'none';
             notesContainer.style.display = 'none';
+            aiContainer.style.display = 'none';
+            headerTitle.textContent = "Gallery World Pro";
             loadMedia();
         }
         
@@ -1406,12 +1762,18 @@
             albumsNav.classList.add('active');
             mediaNav.classList.remove('active');
             notesNav.classList.remove('active');
+            aiNav.classList.remove('active');
             albumsTab.classList.add('active');
             mediaTab.classList.remove('active');
             notesTab.classList.remove('active');
+            aiTab.classList.remove('active');
             galleryContainer.style.display = 'none';
             albumsContainer.style.display = 'block';
+            albumGalleryView.style.display = 'none';
+            albumHeader.style.display = 'none';
             notesContainer.style.display = 'none';
+            aiContainer.style.display = 'none';
+            headerTitle.textContent = "Gallery World Pro";
             loadAlbums();
         }
         
@@ -1420,13 +1782,94 @@
             notesNav.classList.add('active');
             mediaNav.classList.remove('active');
             albumsNav.classList.remove('active');
+            aiNav.classList.remove('active');
             notesTab.classList.add('active');
             mediaTab.classList.remove('active');
             albumsTab.classList.remove('active');
+            aiTab.classList.remove('active');
             galleryContainer.style.display = 'none';
             albumsContainer.style.display = 'none';
+            albumGalleryView.style.display = 'none';
+            albumHeader.style.display = 'none';
             notesContainer.style.display = 'block';
+            aiContainer.style.display = 'none';
+            headerTitle.textContent = "Gallery World Pro";
             loadNotes();
+        }
+        
+        // Switch to AI view
+        function showAIView() {
+            aiNav.classList.add('active');
+            mediaNav.classList.remove('active');
+            albumsNav.classList.remove('active');
+            notesNav.classList.remove('active');
+            aiTab.classList.add('active');
+            mediaTab.classList.remove('active');
+            albumsTab.classList.remove('active');
+            notesTab.classList.remove('active');
+            galleryContainer.style.display = 'none';
+            albumsContainer.style.display = 'none';
+            albumGalleryView.style.display = 'none';
+            albumHeader.style.display = 'none';
+            notesContainer.style.display = 'none';
+            aiContainer.style.display = 'flex';
+            headerTitle.textContent = "Gallery World Pro";
+        }
+        
+        // Add message to chat
+        function addMessage(content, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user-message' : 'ai-message'}`;
+            messageDiv.textContent = content;
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+        
+        // Show typing indicator
+        function showTypingIndicator() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'ai-typing';
+            typingDiv.innerHTML = `
+                <div>Assistant is typing</div>
+                <div class="typing-indicator">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            `;
+            chatContainer.appendChild(typingDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            return typingDiv;
+        }
+        
+        // Send message to AI
+        async function sendMessage() {
+            const prompt = promptInput.value.trim();
+            if (!prompt) return;
+            
+            // Add user message
+            addMessage(prompt, true);
+            
+            // Clear input
+            promptInput.value = '';
+            
+            // Show typing indicator
+            const typingIndicator = showTypingIndicator();
+            
+            try {
+                // Send to AI
+                const res = await puter.ai.chat(prompt, { model: 'meta-llama/llama-3.3-70b-instruct' });
+                
+                // Remove typing indicator
+                typingIndicator.remove();
+                
+                // Add AI response
+                addMessage(res.message.content);
+            } catch (error) {
+                typingIndicator.remove();
+                addMessage('Sorry, I encountered an error. Please try again later.');
+                console.error('AI Error:', error);
+            }
         }
         
         // Initialize the gallery
@@ -1458,9 +1901,15 @@
             mediaNav.addEventListener('click', showMediaView);
             albumsNav.addEventListener('click', showAlbumsView);
             notesNav.addEventListener('click', showNotesView);
+            aiNav.addEventListener('click', showAIView);
             mediaTab.addEventListener('click', showMediaView);
             albumsTab.addEventListener('click', showAlbumsView);
             notesTab.addEventListener('click', showNotesView);
+            aiTab.addEventListener('click', showAIView);
+            
+            // Back buttons
+            backButton.addEventListener('click', showAlbumsView);
+            albumBackButton.addEventListener('click', showAlbumsView);
             
             // Color selector
             document.querySelectorAll('.color-option').forEach(option => {
@@ -1471,6 +1920,14 @@
                     option.classList.add('active');
                     selectedNoteColor = option.dataset.color;
                 });
+            });
+            
+            // AI chat
+            sendButton.addEventListener('click', sendMessage);
+            promptInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
             });
             
             // Add sample content for demo
@@ -1512,5 +1969,6 @@
         // Initialize the app
         document.addEventListener('DOMContentLoaded', initGallery);
     </script>
+    <script type='text/javascript' src='//pl26918415.profitableratecpm.com/fb/a6/65/fba665597bed0e1103c93690f0efcb06.js'></script>
 </body>
 </html>
