@@ -1,0 +1,1516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery World Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #4285f4;
+            --secondary: #34a853;
+            --accent: #ea4335;
+            --light: #ffffff;
+            --dark: #121212;
+            --gray: #f5f5f5;
+            --border: #e0e0e0;
+            --text-dark: #202124;
+            --text-light: #5f6368;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --note-yellow: #fff9c4;
+            --note-green: #c8e6c9;
+            --note-blue: #bbdefb;
+        }
+        
+        body {
+            background: var(--light);
+            color: var(--text-dark);
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* Mobile App Container */
+        .app-container {
+            max-width: 480px;
+            height: 100vh;
+            margin: 0 auto;
+            background: var(--light);
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+        
+        /* Header Styles */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: var(--light);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo i {
+            font-size: 24px;
+            color: var(--primary);
+        }
+        
+        .logo h1 {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        
+        /* Search Bar */
+        .search-container {
+            padding: 10px 15px;
+            background: var(--light);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .search-bar {
+            flex: 1;
+            background: var(--gray);
+            border: none;
+            border-radius: 20px;
+            padding: 12px 20px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: var(--shadow);
+        }
+        
+        .search-bar input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-size: 16px;
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            background: var(--light);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            font-weight: 500;
+            color: var(--text-light);
+            position: relative;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        
+        .tab.active {
+            color: var(--primary);
+        }
+        
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 3px 3px 0 0;
+        }
+        
+        /* Content Container */
+        .content-container {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            background: var(--gray);
+        }
+        
+        /* Gallery Grid */
+        .gallery-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+            padding: 2px;
+            flex: 1;
+        }
+        
+        .gallery-item {
+            aspect-ratio: 1;
+            position: relative;
+            overflow: hidden;
+            background: #f8f9fa;
+            cursor: pointer;
+        }
+        
+        .gallery-item img, .gallery-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .media-icon {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        /* Album View */
+        .albums-container {
+            padding: 15px;
+            flex: 1;
+            display: none;
+            overflow-y: auto;
+        }
+        
+        .album-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .album-card {
+            background: var(--light);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .album-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .album-cover {
+            height: 120px;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c7a89;
+            font-size: 40px;
+            position: relative;
+        }
+        
+        .album-cover .count {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-size: 12px;
+        }
+        
+        .album-info {
+            padding: 12px;
+        }
+        
+        .album-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .album-count {
+            color: var(--text-light);
+            font-size: 14px;
+        }
+        
+        /* Notes View */
+        .notes-container {
+            padding: 15px;
+            flex: 1;
+            display: none;
+            overflow-y: auto;
+        }
+        
+        .notes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .note-card {
+            background: var(--note-yellow);
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: var(--shadow);
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+        
+        .note-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .note-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            border-bottom: 1px dashed rgba(0,0,0,0.1);
+            padding-bottom: 5px;
+        }
+        
+        .note-content {
+            flex: 1;
+            font-size: 14px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+        }
+        
+        .note-date {
+            font-size: 12px;
+            color: var(--text-light);
+            text-align: right;
+            margin-top: 5px;
+        }
+        
+        /* Bottom Navigation */
+        .bottom-nav {
+            background: var(--light);
+            display: flex;
+            justify-content: space-around;
+            border-top: 1px solid var(--border);
+            padding: 10px 0;
+            z-index: 100;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-light);
+            font-size: 12px;
+            cursor: pointer;
+            width: 25%;
+            padding: 8px 0;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-item.active {
+            color: var(--primary);
+        }
+        
+        .nav-item i {
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+        
+        .nav-item .label {
+            font-size: 10px;
+            font-weight: 500;
+        }
+        
+        /* Plus button in center */
+        .plus-nav {
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            top: -20px;
+            box-shadow: 0 4px 12px rgba(66, 133, 244, 0.4);
+            cursor: pointer;
+        }
+        
+        /* Action Sheet */
+        .action-sheet {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            max-width: 480px;
+            margin: 0 auto;
+            background: var(--light);
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            z-index: 1000;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .action-sheet.active {
+            transform: translateY(0);
+        }
+        
+        .action-header {
+            padding: 20px;
+            text-align: center;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .action-options {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .action-option {
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .action-option:last-child {
+            border-bottom: none;
+        }
+        
+        .action-option:hover {
+            background: var(--gray);
+        }
+        
+        .action-option i {
+            font-size: 24px;
+            width: 30px;
+            text-align: center;
+        }
+        
+        .action-option .upload {
+            color: var(--primary);
+        }
+        
+        .action-option .album {
+            color: var(--secondary);
+        }
+        
+        .action-option .note {
+            color: #ffb300;
+        }
+        
+        .action-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .action-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background: var(--light);
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            padding: 25px;
+            position: relative;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+        
+        .modal-content h2 {
+            margin-bottom: 20px;
+            color: var(--text-dark);
+        }
+        
+        .modal-content p {
+            color: var(--text-light);
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+            min-width: 100px;
+        }
+        
+        .btn.primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn.secondary {
+            background: var(--gray);
+            color: var(--text-light);
+            border: 1px solid var(--border);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        
+        /* File Upload */
+        .file-upload-area {
+            border: 2px dashed var(--border);
+            border-radius: 15px;
+            padding: 40px 20px;
+            margin: 20px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .file-upload-area:hover {
+            border-color: var(--primary);
+            background: rgba(66, 133, 244, 0.05);
+        }
+        
+        .file-upload-area i {
+            font-size: 48px;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        #fileInput {
+            display: none;
+        }
+        
+        /* Media Viewer */
+        .media-viewer {
+            width: 100%;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        
+        .media-viewer img {
+            width: 100%;
+            border-radius: 10px;
+            max-height: 70vh;
+            object-fit: contain;
+        }
+        
+        .media-viewer video {
+            width: 100%;
+            border-radius: 10px;
+            background: black;
+            max-height: 70vh;
+        }
+        
+        .media-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .media-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            border: none;
+        }
+        
+        /* Album Selector */
+        .album-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 20px 0;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+        
+        .album-option {
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+        
+        .album-option:last-child {
+            border-bottom: none;
+        }
+        
+        .album-option:hover {
+            background: var(--gray);
+        }
+        
+        /* Note Form */
+        .note-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            text-align: left;
+        }
+        
+        .form-group label {
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+        
+        .form-group input, .form-group textarea {
+            padding: 12px 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--light);
+            font-size: 16px;
+            width: 100%;
+        }
+        
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .color-selector {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+        
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        
+        .color-option.active {
+            border-color: var(--text-dark);
+        }
+        
+        /* Empty State */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            text-align: center;
+            gap: 20px;
+            color: var(--text-light);
+            flex: 1;
+        }
+        
+        .empty-state i {
+            font-size: 60px;
+            color: #dadce0;
+        }
+        
+        /* Responsive */
+        @media (max-width: 480px) {
+            .app-container {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header>
+            <div class="logo">
+                <i class="fas fa-images"></i>
+                <h1>Gallery World Pro</h1>
+            </div>
+        </header>
+        
+        <!-- Search Bar -->
+        <div class="search-container">
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search media...">
+            </div>
+        </div>
+        
+        <!-- Navigation Tabs -->
+        <div class="tabs">
+            <div class="tab active" id="mediaTab">Media</div>
+            <div class="tab" id="albumsTab">Albums</div>
+            <div class="tab" id="notesTab">Notes</div>
+        </div>
+        
+        <!-- Content Container -->
+        <div class="content-container">
+            <!-- Media View -->
+            <div class="gallery-container" id="galleryView">
+                <div class="empty-state">
+                    <i class="fas fa-images"></i>
+                    <h2>Your Gallery is Empty</h2>
+                    <p>Add media using the + button</p>
+                </div>
+            </div>
+            
+            <!-- Albums View -->
+            <div class="albums-container" id="albumsView">
+                <div class="empty-state">
+                    <i class="fas fa-book"></i>
+                    <h2>No Albums Yet</h2>
+                    <p>Create your first album</p>
+                </div>
+            </div>
+            
+            <!-- Notes View -->
+            <div class="notes-container" id="notesView">
+                <div class="empty-state">
+                    <i class="fas fa-sticky-note"></i>
+                    <h2>No Notes Yet</h2>
+                    <p>Create your first note</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item active" id="mediaNav">
+                <i class="fas fa-th-large"></i>
+                <span class="label">Media</span>
+            </div>
+            <div class="nav-item" id="albumsNav">
+                <i class="fas fa-book"></i>
+                <span class="label">Albums</span>
+            </div>
+            <div class="nav-item" id="plusNav">
+                <div class="plus-nav">
+                    <i class="fas fa-plus"></i>
+                </div>
+            </div>
+            <div class="nav-item" id="notesNav">
+                <i class="fas fa-sticky-note"></i>
+                <span class="label">Notes</span>
+            </div>
+        </div>
+        
+        <!-- Action Sheet -->
+        <div class="action-sheet" id="actionSheet">
+            <div class="action-header">
+                Add Content
+            </div>
+            <div class="action-options">
+                <div class="action-option" id="uploadOption">
+                    <i class="fas fa-cloud-upload-alt upload"></i>
+                    <div>Upload Media</div>
+                </div>
+                <div class="action-option" id="albumOption">
+                    <i class="fas fa-folder-plus album"></i>
+                    <div>Create Album</div>
+                </div>
+                <div class="action-option" id="noteOption">
+                    <i class="fas fa-sticky-note note"></i>
+                    <div>Create Note</div>
+                </div>
+            </div>
+        </div>
+        <div class="action-overlay" id="actionOverlay"></div>
+        
+        <!-- Upload Modal -->
+        <div class="modal" id="uploadModal">
+            <div class="modal-content">
+                <h2>Add Media</h2>
+                
+                <div class="file-upload-area" id="fileUploadArea">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <h3>Click to select files</h3>
+                    <p>Images or videos</p>
+                    <input type="file" id="fileInput" accept="image/*,video/*" multiple>
+                </div>
+                
+                <div class="btn-group">
+                    <button class="btn secondary" id="cancelUploadBtn">Cancel</button>
+                    <button class="btn primary" id="uploadBtn">Upload</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Create Album Modal -->
+        <div class="modal" id="albumModal">
+            <div class="modal-content">
+                <h2>Create Album</h2>
+                
+                <div class="form-group">
+                    <label for="albumName">Album Name</label>
+                    <input type="text" id="albumName" placeholder="Enter album name">
+                </div>
+                
+                <div class="btn-group">
+                    <button class="btn secondary" id="cancelAlbumBtn">Cancel</button>
+                    <button class="btn primary" id="createAlbumBtn">Create</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Media Viewer Modal -->
+        <div class="modal" id="mediaViewerModal">
+            <div class="modal-content">
+                <h2 id="mediaTitle">Media Viewer</h2>
+                
+                <div class="media-viewer">
+                    <img id="mediaImage" style="display: none;">
+                    <video id="mediaVideo" controls style="display: none;"></video>
+                </div>
+                
+                <div class="album-selector" id="albumSelector" style="display: none;">
+                    <h3>Add to Album</h3>
+                    <!-- Albums will be populated here -->
+                </div>
+                
+                <div class="media-controls">
+                    <button class="media-btn" id="addToAlbumBtn" title="Add to Album">
+                        <i class="fas fa-folder-plus"></i>
+                    </button>
+                    <button class="media-btn" id="downloadBtn" title="Download">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <button class="media-btn" id="deleteMediaBtn" title="Delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    <button class="media-btn" id="closeMediaBtn" title="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Note Editor Modal -->
+        <div class="modal" id="noteModal">
+            <div class="modal-content">
+                <h2 id="noteModalTitle">Create Note</h2>
+                
+                <div class="note-form">
+                    <div class="form-group">
+                        <label for="noteTitle">Title</label>
+                        <input type="text" id="noteTitle" placeholder="Note title">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="noteContent">Content</label>
+                        <textarea id="noteContent" placeholder="Write your note here..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Color</label>
+                        <div class="color-selector">
+                            <div class="color-option active" style="background: var(--note-yellow);" data-color="yellow"></div>
+                            <div class="color-option" style="background: var(--note-green);" data-color="green"></div>
+                            <div class="color-option" style="background: var(--note-blue);" data-color="blue"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="btn-group">
+                    <button class="btn secondary" id="cancelNoteBtn">Cancel</button>
+                    <button class="btn primary" id="saveNoteBtn">Save</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Success Modal -->
+        <div class="modal" id="successModal">
+            <div class="modal-content">
+                <div style="font-size: 60px; color: var(--secondary); margin-bottom: 20px;">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h2 id="successTitle">Success!</h2>
+                <p id="successMessage">Your action was completed successfully.</p>
+                
+                <div class="btn-group">
+                    <button class="btn primary" id="successBtn">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const galleryContainer = document.getElementById('galleryView');
+        const albumsContainer = document.getElementById('albumsView');
+        const notesContainer = document.getElementById('notesView');
+        const actionSheet = document.getElementById('actionSheet');
+        const actionOverlay = document.getElementById('actionOverlay');
+        const uploadOption = document.getElementById('uploadOption');
+        const albumOption = document.getElementById('albumOption');
+        const noteOption = document.getElementById('noteOption');
+        const uploadModal = document.getElementById('uploadModal');
+        const albumModal = document.getElementById('albumModal');
+        const mediaViewerModal = document.getElementById('mediaViewerModal');
+        const noteModal = document.getElementById('noteModal');
+        const successModal = document.getElementById('successModal');
+        const fileUploadArea = document.getElementById('fileUploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const cancelUploadBtn = document.getElementById('cancelUploadBtn');
+        const albumName = document.getElementById('albumName');
+        const createAlbumBtn = document.getElementById('createAlbumBtn');
+        const cancelAlbumBtn = document.getElementById('cancelAlbumBtn');
+        const mediaImage = document.getElementById('mediaImage');
+        const mediaVideo = document.getElementById('mediaVideo');
+        const mediaTitle = document.getElementById('mediaTitle');
+        const albumSelector = document.getElementById('albumSelector');
+        const addToAlbumBtn = document.getElementById('addToAlbumBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const deleteMediaBtn = document.getElementById('deleteMediaBtn');
+        const closeMediaBtn = document.getElementById('closeMediaBtn');
+        const noteTitle = document.getElementById('noteTitle');
+        const noteContent = document.getElementById('noteContent');
+        const saveNoteBtn = document.getElementById('saveNoteBtn');
+        const cancelNoteBtn = document.getElementById('cancelNoteBtn');
+        const successBtn = document.getElementById('successBtn');
+        const mediaNav = document.getElementById('mediaNav');
+        const albumsNav = document.getElementById('albumsNav');
+        const notesNav = document.getElementById('notesNav');
+        const mediaTab = document.getElementById('mediaTab');
+        const albumsTab = document.getElementById('albumsTab');
+        const notesTab = document.getElementById('notesTab');
+        const searchInput = document.getElementById('searchInput');
+        const plusNav = document.getElementById('plusNav');
+        const successTitle = document.getElementById('successTitle');
+        const successMessage = document.getElementById('successMessage');
+        const noteModalTitle = document.getElementById('noteModalTitle');
+        
+        // State
+        let mediaItems = [];
+        let albums = [];
+        let notes = [];
+        let selectedFiles = [];
+        let currentMediaIndex = -1;
+        let currentNoteIndex = -1;
+        let selectedNoteColor = 'yellow';
+        
+        // Function to load media
+        function loadMedia() {
+            galleryContainer.innerHTML = '';
+            
+            if (mediaItems.length === 0) {
+                // Show empty state
+                const emptyState = document.createElement('div');
+                emptyState.className = 'empty-state';
+                emptyState.innerHTML = `
+                    <i class="fas fa-images"></i>
+                    <h2>Your Gallery is Empty</h2>
+                    <p>Add media using the + button</p>
+                `;
+                galleryContainer.appendChild(emptyState);
+                return;
+            }
+            
+            // Add media to gallery
+            mediaItems.forEach((item, index) => {
+                const mediaItem = document.createElement('div');
+                mediaItem.className = 'gallery-item';
+                mediaItem.dataset.id = index;
+                mediaItem.dataset.type = item.type;
+                
+                if (item.type === 'image') {
+                    mediaItem.innerHTML = `
+                        <img src="${item.url}" alt="Media ${index + 1}">
+                        <div class="media-icon">
+                            <i class="fas fa-image"></i>
+                        </div>
+                    `;
+                } else {
+                    mediaItem.innerHTML = `
+                        <video>
+                            <source src="${item.url}" type="video/mp4">
+                        </video>
+                        <div class="media-icon">
+                            <i class="fas fa-video"></i>
+                        </div>
+                    `;
+                }
+                
+                mediaItem.addEventListener('click', () => {
+                    openMediaViewer(index);
+                });
+                
+                galleryContainer.appendChild(mediaItem);
+            });
+        }
+        
+        // Function to load albums
+        function loadAlbums() {
+            albumsContainer.innerHTML = '';
+            
+            if (albums.length === 0) {
+                // Show empty state
+                const emptyState = document.createElement('div');
+                emptyState.className = 'empty-state';
+                emptyState.innerHTML = `
+                    <i class="fas fa-book"></i>
+                    <h2>No Albums Yet</h2>
+                    <p>Create your first album</p>
+                `;
+                albumsContainer.appendChild(emptyState);
+                return;
+            }
+            
+            const albumGrid = document.createElement('div');
+            albumGrid.className = 'album-grid';
+            
+            albums.forEach((album, index) => {
+                const albumCard = document.createElement('div');
+                albumCard.className = 'album-card';
+                albumCard.dataset.id = index;
+                
+                albumCard.innerHTML = `
+                    <div class="album-cover">
+                        <i class="fas fa-folder"></i>
+                        <div class="count">${album.items.length}</div>
+                    </div>
+                    <div class="album-info">
+                        <div class="album-title">${album.name}</div>
+                        <div class="album-count">${album.items.length} items</div>
+                    </div>
+                `;
+                
+                albumCard.addEventListener('click', () => {
+                    showSuccess('Album Opened', `You opened the album "${album.name}"`);
+                });
+                
+                albumGrid.appendChild(albumCard);
+            });
+            
+            albumsContainer.appendChild(albumGrid);
+        }
+        
+        // Function to load notes
+        function loadNotes() {
+            notesContainer.innerHTML = '';
+            
+            if (notes.length === 0) {
+                // Show empty state
+                const emptyState = document.createElement('div');
+                emptyState.className = 'empty-state';
+                emptyState.innerHTML = `
+                    <i class="fas fa-sticky-note"></i>
+                    <h2>No Notes Yet</h2>
+                    <p>Create your first note</p>
+                `;
+                notesContainer.appendChild(emptyState);
+                return;
+            }
+            
+            const notesGrid = document.createElement('div');
+            notesGrid.className = 'notes-grid';
+            
+            notes.forEach((note, index) => {
+                const noteCard = document.createElement('div');
+                noteCard.className = 'note-card';
+                noteCard.style.backgroundColor = note.color;
+                noteCard.dataset.id = index;
+                
+                // Format date
+                const date = new Date(note.date);
+                const formattedDate = date.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                });
+                
+                noteCard.innerHTML = `
+                    <div class="note-title">${note.title}</div>
+                    <div class="note-content">${note.content}</div>
+                    <div class="note-date">${formattedDate}</div>
+                `;
+                
+                noteCard.addEventListener('click', () => {
+                    openNoteEditor(index);
+                });
+                
+                notesGrid.appendChild(noteCard);
+            });
+            
+            notesContainer.appendChild(notesGrid);
+        }
+        
+        // Open action sheet
+        function openActionSheet() {
+            actionSheet.classList.add('active');
+            actionOverlay.classList.add('active');
+        }
+        
+        // Close action sheet
+        function closeActionSheet() {
+            actionSheet.classList.remove('active');
+            actionOverlay.classList.remove('active');
+        }
+        
+        // Open upload modal
+        function openUploadModal() {
+            uploadModal.classList.add('active');
+            selectedFiles = [];
+            closeActionSheet();
+        }
+        
+        // Close upload modal
+        function closeUploadModal() {
+            uploadModal.classList.remove('active');
+        }
+        
+        // Open album modal
+        function openAlbumModal() {
+            albumModal.classList.add('active');
+            albumName.value = '';
+            closeActionSheet();
+        }
+        
+        // Close album modal
+        function closeAlbumModal() {
+            albumModal.classList.remove('active');
+        }
+        
+        // Open media viewer
+        function openMediaViewer(index) {
+            currentMediaIndex = index;
+            const media = mediaItems[index];
+            
+            mediaTitle.textContent = media.name;
+            mediaImage.style.display = 'none';
+            mediaVideo.style.display = 'none';
+            albumSelector.style.display = 'none';
+            
+            if (media.type === 'image') {
+                mediaImage.src = media.url;
+                mediaImage.style.display = 'block';
+            } else {
+                mediaVideo.src = media.url;
+                mediaVideo.style.display = 'block';
+            }
+            
+            mediaViewerModal.classList.add('active');
+        }
+        
+        // Close media viewer
+        function closeMediaViewer() {
+            mediaViewerModal.classList.remove('active');
+            if (mediaVideo.style.display === 'block') {
+                mediaVideo.pause();
+            }
+        }
+        
+        // Open note editor
+        function openNoteEditor(index = -1) {
+            currentNoteIndex = index;
+            
+            if (index === -1) {
+                // New note
+                noteModalTitle.textContent = 'Create Note';
+                noteTitle.value = '';
+                noteContent.value = '';
+                selectedNoteColor = 'yellow';
+                
+                // Update color selector
+                document.querySelectorAll('.color-option').forEach(option => {
+                    option.classList.remove('active');
+                    if (option.dataset.color === selectedNoteColor) {
+                        option.classList.add('active');
+                    }
+                });
+            } else {
+                // Edit existing note
+                noteModalTitle.textContent = 'Edit Note';
+                const note = notes[index];
+                noteTitle.value = note.title;
+                noteContent.value = note.content;
+                selectedNoteColor = note.color;
+                
+                // Update color selector
+                document.querySelectorAll('.color-option').forEach(option => {
+                    option.classList.remove('active');
+                    if (option.dataset.color === selectedNoteColor) {
+                        option.classList.add('active');
+                    }
+                });
+            }
+            
+            noteModal.classList.add('active');
+            closeActionSheet();
+        }
+        
+        // Close note editor
+        function closeNoteEditor() {
+            noteModal.classList.remove('active');
+        }
+        
+        // Show success message
+        function showSuccess(title, message) {
+            successTitle.textContent = title;
+            successMessage.textContent = message;
+            successModal.classList.add('active');
+        }
+        
+        // Close success modal
+        function closeSuccessModal() {
+            successModal.classList.remove('active');
+        }
+        
+        // Handle file selection
+        function handleFileSelect(e) {
+            const files = e.target.files;
+            if (files.length === 0) return;
+            
+            selectedFiles = Array.from(files);
+        }
+        
+        // Upload selected files
+        function uploadFiles() {
+            if (selectedFiles.length === 0) return;
+            
+            // Add to gallery
+            selectedFiles.forEach(file => {
+                const url = URL.createObjectURL(file);
+                const type = file.type.startsWith('image/') ? 'image' : 'video';
+                
+                mediaItems.push({
+                    type: type,
+                    url: url,
+                    name: file.name
+                });
+            });
+            
+            // Close upload modal
+            closeUploadModal();
+            
+            // Show success message
+            showSuccess('Upload Successful', `${selectedFiles.length} files uploaded successfully!`);
+            
+            // Update gallery view
+            loadMedia();
+        }
+        
+        // Create new album
+        function createAlbum() {
+            const name = albumName.value.trim();
+            if (!name) return;
+            
+            albums.push({
+                name: name,
+                items: []
+            });
+            
+            // Close album modal
+            closeAlbumModal();
+            
+            // Show success message
+            showSuccess('Album Created', `Album "${name}" created successfully!`);
+            
+            // Update albums view
+            loadAlbums();
+        }
+        
+        // Save note
+        function saveNote() {
+            const title = noteTitle.value.trim();
+            const content = noteContent.value.trim();
+            
+            if (!title || !content) return;
+            
+            const note = {
+                title: title,
+                content: content,
+                color: selectedNoteColor,
+                date: Date.now()
+            };
+            
+            if (currentNoteIndex === -1) {
+                // New note
+                notes.push(note);
+            } else {
+                // Update existing note
+                notes[currentNoteIndex] = note;
+            }
+            
+            // Close note editor
+            closeNoteEditor();
+            
+            // Show success message
+            showSuccess('Note Saved', 'Your note has been saved successfully!');
+            
+            // Update notes view
+            loadNotes();
+        }
+        
+        // Show album selector
+        function showAlbumSelector() {
+            albumSelector.innerHTML = '<h3>Add to Album</h3>';
+            
+            if (albums.length === 0) {
+                albumSelector.innerHTML += '<p>No albums available. Create one first!</p>';
+            } else {
+                albums.forEach((album, index) => {
+                    const albumOption = document.createElement('div');
+                    albumOption.className = 'album-option';
+                    albumOption.dataset.id = index;
+                    albumOption.innerHTML = `
+                        <i class="fas fa-folder"></i>
+                        <div>${album.name}</div>
+                    `;
+                    
+                    albumOption.addEventListener('click', () => {
+                        // Add media to album
+                        const media = mediaItems[currentMediaIndex];
+                        albums[index].items.push(media);
+                        
+                        // Show success
+                        showSuccess('Added to Album', `Added to "${album.name}"`);
+                        
+                        // Hide selector
+                        albumSelector.style.display = 'none';
+                    });
+                    
+                    albumSelector.appendChild(albumOption);
+                });
+            }
+            
+            albumSelector.style.display = 'block';
+        }
+        
+        // Delete media
+        function deleteMedia() {
+            if (currentMediaIndex === -1) return;
+            
+            if (confirm('Are you sure you want to delete this media?')) {
+                mediaItems.splice(currentMediaIndex, 1);
+                closeMediaViewer();
+                loadMedia();
+                showSuccess('Media Deleted', 'The media has been deleted.');
+            }
+        }
+        
+        // Download media
+        function downloadMedia() {
+            if (currentMediaIndex === -1) return;
+            
+            const media = mediaItems[currentMediaIndex];
+            const link = document.createElement('a');
+            link.href = media.url;
+            link.download = media.name;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        // Switch to Media view
+        function showMediaView() {
+            mediaNav.classList.add('active');
+            albumsNav.classList.remove('active');
+            notesNav.classList.remove('active');
+            mediaTab.classList.add('active');
+            albumsTab.classList.remove('active');
+            notesTab.classList.remove('active');
+            galleryContainer.style.display = 'grid';
+            albumsContainer.style.display = 'none';
+            notesContainer.style.display = 'none';
+            loadMedia();
+        }
+        
+        // Switch to Albums view
+        function showAlbumsView() {
+            albumsNav.classList.add('active');
+            mediaNav.classList.remove('active');
+            notesNav.classList.remove('active');
+            albumsTab.classList.add('active');
+            mediaTab.classList.remove('active');
+            notesTab.classList.remove('active');
+            galleryContainer.style.display = 'none';
+            albumsContainer.style.display = 'block';
+            notesContainer.style.display = 'none';
+            loadAlbums();
+        }
+        
+        // Switch to Notes view
+        function showNotesView() {
+            notesNav.classList.add('active');
+            mediaNav.classList.remove('active');
+            albumsNav.classList.remove('active');
+            notesTab.classList.add('active');
+            mediaTab.classList.remove('active');
+            albumsTab.classList.remove('active');
+            galleryContainer.style.display = 'none';
+            albumsContainer.style.display = 'none';
+            notesContainer.style.display = 'block';
+            loadNotes();
+        }
+        
+        // Initialize the gallery
+        function initGallery() {
+            // Initialize views
+            showMediaView();
+            
+            // Event listeners
+            plusNav.addEventListener('click', openActionSheet);
+            actionOverlay.addEventListener('click', closeActionSheet);
+            uploadOption.addEventListener('click', openUploadModal);
+            albumOption.addEventListener('click', openAlbumModal);
+            noteOption.addEventListener('click', () => openNoteEditor(-1));
+            fileUploadArea.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFileSelect);
+            uploadBtn.addEventListener('click', uploadFiles);
+            cancelUploadBtn.addEventListener('click', closeUploadModal);
+            createAlbumBtn.addEventListener('click', createAlbum);
+            cancelAlbumBtn.addEventListener('click', closeAlbumModal);
+            addToAlbumBtn.addEventListener('click', showAlbumSelector);
+            downloadBtn.addEventListener('click', downloadMedia);
+            deleteMediaBtn.addEventListener('click', deleteMedia);
+            closeMediaBtn.addEventListener('click', closeMediaViewer);
+            saveNoteBtn.addEventListener('click', saveNote);
+            cancelNoteBtn.addEventListener('click', closeNoteEditor);
+            successBtn.addEventListener('click', closeSuccessModal);
+            
+            // Navigation
+            mediaNav.addEventListener('click', showMediaView);
+            albumsNav.addEventListener('click', showAlbumsView);
+            notesNav.addEventListener('click', showNotesView);
+            mediaTab.addEventListener('click', showMediaView);
+            albumsTab.addEventListener('click', showAlbumsView);
+            notesTab.addEventListener('click', showNotesView);
+            
+            // Color selector
+            document.querySelectorAll('.color-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    document.querySelectorAll('.color-option').forEach(opt => {
+                        opt.classList.remove('active');
+                    });
+                    option.classList.add('active');
+                    selectedNoteColor = option.dataset.color;
+                });
+            });
+            
+            // Add sample content for demo
+            setTimeout(() => {
+                // Add sample media
+                mediaItems.push({
+                    type: 'image',
+                    url: 'https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&w=500',
+                    name: 'Mountain Landscape.jpg'
+                });
+                
+                mediaItems.push({
+                    type: 'video',
+                    url: 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+                    name: 'Nature Video.mp4'
+                });
+                
+                // Add sample album
+                albums.push({
+                    name: 'Vacation Photos',
+                    items: []
+                });
+                
+                // Add sample note
+                notes.push({
+                    title: 'Shopping List',
+                    content: '1. Milk\n2. Eggs\n3. Bread\n4. Fruits',
+                    color: 'yellow',
+                    date: Date.now()
+                });
+                
+                // Load content
+                loadMedia();
+                loadAlbums();
+                loadNotes();
+            }, 1000);
+        }
+        
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', initGallery);
+    </script>
+</body>
+</html>
